@@ -1,19 +1,30 @@
-from flask import Flask, request, render_template
-# from "EmotionDetection" import emotion_detector
+from flask import Flask, render_template, request, jsonify
+from EmotionDetection.emotion_detection import detect_emotion
 
 app = Flask(__name__)
 
-@app.route("/emotionDetector")
-def render_index_page():
+@app.route('/')
+def home():
     return render_template('index.html')
 
-def analyze_sentiment():
-    text_to_analyze = request.args.get('textToAnalyze')
-    # response = emotion_detector(text_to_analyze)
-    # label = response['label']
-    # score = response['score']
-    
-    return "server running on port 4000"
+@app.route('/emotionDetector', methods=['GET','POST'])
+def emotion_detector():
+    # try query params, then form data, then JSON body
+    text = request.args.get('textToAnalyze')
+    if not text:
+        text = request.form.get('textToAnalyze')
+    if not text:
+        data = request.get_json(silent=True)
+        if data:
+            text = data.get('textToAnalyze') or data.get('text')
+
+    print("Received text:", repr(text))
+
+    if not text or str(text).strip() == "":
+        return jsonify({"error": "Invalid text! Please try again!"}), 400
+
+    emotion_result = detect_emotion(text)
+    return jsonify(emotion_result)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
