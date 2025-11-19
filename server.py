@@ -24,7 +24,18 @@ def emotion_detector():
         return jsonify({"error": "Invalid text! Please try again!"}), 400
 
     emotion_result = detect_emotion(text)
-    return jsonify(emotion_result)
+
+    response = (
+        f"For the given statement, the system response is "
+        f"'anger': {emotion_result['anger']}, "
+        f"'disgust': {emotion_result['disgust']}, "
+        f"'fear': {emotion_result['fear']}, "
+        f"'joy': {emotion_result['joy']} and "
+        f"'sadness': {emotion_result['sadness']}. "
+        f"The dominant emotion is {emotion_result['dominant_emotion']}."
+    )
+
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
