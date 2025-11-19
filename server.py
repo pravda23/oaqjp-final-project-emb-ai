@@ -25,7 +25,10 @@ def emotion_detector():
 
     emotion_result = detect_emotion(text)
 
-    response = (
+    if emotion_result.get('dominant_emotion') is None:
+        return "Invalid text! Please try again!", 400
+
+    formatted_response = (
         f"For the given statement, the system response is "
         f"'anger': {emotion_result['anger']}, "
         f"'disgust': {emotion_result['disgust']}, "
@@ -35,7 +38,7 @@ def emotion_detector():
         f"The dominant emotion is {emotion_result['dominant_emotion']}."
     )
 
-    return response
+    return formatted_response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
